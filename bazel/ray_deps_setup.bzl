@@ -28,6 +28,7 @@ def auto_http_archive(
         build_file = None,
         build_file_content = None,
         strip_prefix = True,
+        local_path = None,
         **kwargs):
     """ Intelligently choose mirrors based on the given URL for the download.
     Either url or urls is required.
@@ -38,6 +39,9 @@ def auto_http_archive(
     """
     DOUBLE_SUFFIXES_LOWERCASE = [("tar", "bz2"), ("tar", "gz"), ("tar", "xz")]
     mirror_prefixes = ["https://mirror.bazel.build/", "https://storage.googleapis.com/bazel-mirror"]
+
+    if local_path != None:
+        urls = ["file://" + local_path]
 
     canonical_url = url if url != None else urls[0]
     url_parts = urlsplit(canonical_url)
@@ -75,7 +79,7 @@ def auto_http_archive(
 
     return http_archive(
         name = name,
-        url = url,
+        url = url if local_path == None else None,
         urls = urls,
         build_file = build_file,
         build_file_content = build_file_content,
